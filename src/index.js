@@ -2,11 +2,14 @@ import express from 'express';
 import authRouter from './routers/authRouter.js';
 // import postRouter from './routers/postRouter.js';
 // import usersRouter from './routers/usersRouter.js';
+import cookieParser from 'cookie-parser';
 
 
 const app = express();
 
 app.use(express.json());
+app.use(cookieParser());
+
 
 app.use('/api/auth', authRouter);
 // app.use('/api/posts', postRouter);

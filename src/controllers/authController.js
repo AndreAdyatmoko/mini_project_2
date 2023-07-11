@@ -1,5 +1,6 @@
 import {db} from '../db/db.js'
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
 export const register = (req, res) => {
     //check existing user
     const q = 'select * from users where email = ? or username = ?';
@@ -29,9 +30,30 @@ export const register = (req, res) => {
     }
         
         )}
-// export const login = (req, res) => {
+export const login = (req, res) => {
+    // check user
+    const q = 'select * from users where username = ? or email = ?';
+    db.query(q,[req.body.username, req.body.email], (err, data) => {
+        if(err) return res.json(err);
+        if(data.lengt === 0) return res.status(404).json('Username atau Email tidak terdaftar');
 
-// }
+        // Compare password
+        const isPasswordValid = bcrypt.compareSync(req.body.password, data[0].password);
+        if(!isPasswordValid) return res.status(400).json('Password salah');
+
+        // Generate token
+        const token = jwt.sign({
+            id: data[0].id
+        }, "secret", );
+        
+
+        res.cookie("akses_token", token, {
+            httpOnly: true
+        }).status(200).json(data[0]);
+
+    })
+
+}
 // export const logout = (req, res) => {
 
 // }
